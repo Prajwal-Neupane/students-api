@@ -1,4 +1,6 @@
 env: "dev"
 storage_path: "storage/storage.db"
 server:
-  host: localhost
+  host: "localhost"
+  # port: "8080"
+  address: ":8080"

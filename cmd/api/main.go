@@ -1,8 +1,69 @@
 package main
 
-import "fmt"
+import (
+	"context"
+	"log"
+	"log/slog"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/Prajwal-Neupane/students-api/internal/config"
+)
 
 
 func main() {
-	fmt.Println("Welcome to student API")
+// load config
+	cfg := config.MustLoad()
+// database setup
+// setup router
+
+	router := http.NewServeMux()
+
+
+	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		_, err := w.Write([]byte("Welcome to student API"))
+		if err != nil {
+			panic(err)
+		}
+	})
+// setup server
+
+	server := http.Server{
+		Addr: cfg.Address,
+		Handler: router,
+	}
+
+	// fmt.Println("Server started")
+	slog.Info("Server started", slog.String("address", cfg.Address))
+	done := make(chan os.Signal, 1)
+
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+
+	err := server.ListenAndServe()
+
+	if err != nil {
+		log.Fatal("failed to start server", err)
+	}
+	}()
+
+	<-done
+
+	slog.Info("Shutting down the server")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
+	defer cancel()
+
+	err := server.Shutdown(ctx)
+
+	if err != nil {
+		slog.Error("Failed to shutdown server", slog.String("error", err.Error()))
+	}
+
+	slog.Info("Server shutdown successfully");
+
+	
 }

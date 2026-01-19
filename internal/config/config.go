@@ -9,6 +9,7 @@ import (
 )
 
 type Server struct {
+	Host string
 	Address string
 }
 
