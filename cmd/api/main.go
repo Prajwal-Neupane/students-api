@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Prajwal-Neupane/students-api/internal/config"
+	"github.com/Prajwal-Neupane/students-api/internal/handler/student"
 )
 
 
@@ -23,12 +24,7 @@ func main() {
 	router := http.NewServeMux()
 
 
-	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		_, err := w.Write([]byte("Welcome to student API"))
-		if err != nil {
-			panic(err)
-		}
-	})
+	router.HandleFunc("POST /api/students", student.New())
 // setup server
 
 	server := http.Server{
