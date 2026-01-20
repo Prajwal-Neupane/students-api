@@ -12,6 +12,7 @@ import (
 
 	"github.com/Prajwal-Neupane/students-api/internal/config"
 	"github.com/Prajwal-Neupane/students-api/internal/handler/student"
+	"github.com/Prajwal-Neupane/students-api/internal/storage/sqlite"
 )
 
 
@@ -19,6 +20,14 @@ func main() {
 // load config
 	cfg := config.MustLoad()
 // database setup
+
+	_, err:= sqlite.New(cfg)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	slog.Info("Storage INitialized", slog.String("env", cfg.Env), slog.String("version", "1.0.0"))
+
 // setup router
 
 	router := http.NewServeMux()
@@ -53,13 +62,13 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
 	defer cancel()
 
-	err := server.Shutdown(ctx)
+	server.Shutdown(ctx)
 
-	if err != nil {
-		slog.Error("Failed to shutdown server", slog.String("error", err.Error()))
-	}
+	// if err != nil {
+	// 	slog.Error("Failed to shutdown server", slog.String("error", err.Error()))
+	// }
 
-	slog.Info("Server shutdown successfully");
+	// slog.Info("Server shutdown successfully");
 
 	
 }
