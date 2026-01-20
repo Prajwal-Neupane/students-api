@@ -35,4 +35,6 @@ func New(cfg *config.Config) (*Sqlite, error) {
 		Db: db,
 	}, nil
 
+	// Added hello
+
 }
